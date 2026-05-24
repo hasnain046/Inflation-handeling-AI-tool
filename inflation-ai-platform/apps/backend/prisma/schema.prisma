@@ -1,0 +1,161 @@
+// Prisma schema for InflationAI platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  ANALYST
+  RESEARCHER
+  GUEST
+}
+
+enum AlertType {
+  INFLATION_SPIKE
+  SENTIMENT_ANOMALY
+  CPI_THRESHOLD
+  ECONOMIC_SHOCK
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SentimentLabel {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String
+  password        String
+  role            UserRole  @default(ANALYST)
+  avatar          String?
+  emailVerified   Boolean   @default(false)
+  verifyToken     String?
+  resetToken      String?
+  resetTokenExp   DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  forecasts       Forecast[]
+  alerts          Alert[]
+  reports         Report[]
+  auditLogs       AuditLog[]
+}
+
+model Forecast {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  model       String
+  horizon     String
+  predictions Json
+  mae         Float
+  rmse        Float
+  mape        Float
+  r2          Float
+  inputs      Json?
+  createdAt   DateTime @default(now())
+}
+
+model EconomicIndicator {
+  id        String   @id @default(cuid())
+  name      String
+  value     Float
+  unit      String
+  source    String
+  change    Float    @default(0)
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  @@index([name, date])
+}
+
+model CPIRecord {
+  id        String   @id @default(cuid())
+  date      DateTime @unique
+  value     Float
+  yoy       Float
+  mom       Float
+  category  String?
+  source    String   @default("BLS")
+  createdAt DateTime @default(now())
+
+  @@index([date])
+}
+
+model SentimentRecord {
+  id        String         @id @default(cuid())
+  source    String
+  score     Float
+  label     SentimentLabel
+  text      String?
+  topics    String[]
+  date      DateTime
+  createdAt DateTime       @default(now())
+
+  @@index([date, source])
+}
+
+model NarrativeTopic {
+  id             String   @id @default(cuid())
+  name           String
+  category       String
+  confidence     Float
+  trend          String
+  mentions       Int
+  sentimentScore Float
+  date           DateTime
+  createdAt      DateTime @default(now())
+
+  @@index([date])
+}
+
+model Alert {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  type      AlertType
+  severity  AlertSeverity
+  message   String
+  read      Boolean       @default(false)
+  createdAt DateTime      @default(now())
+
+  @@index([userId, read])
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  type      String
+  filePath  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  resource  String
+  details   Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
