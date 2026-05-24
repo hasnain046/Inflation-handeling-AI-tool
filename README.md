@@ -13,7 +13,7 @@
 
 **Real-time CPI forecasting · NLP Sentiment Analysis · Scenario Simulation · Multi-Model AI**
 
-[🚀 Live Demo](https://inflation-handeling-ai-tool.vercel.app) · [📦 GitHub Repo](https://github.com/hasnain046/Inflation-handeling-AI-tool) · [📚 API Docs](http://localhost:4000/api/docs)
+[🚀 Live Demo](https://inflation-handeling-ai-tool-v5yy.vercel.app/) · [📦 GitHub Repo](https://github.com/hasnain046/Inflation-handeling-AI-tool) ·
 
 </div>
 
