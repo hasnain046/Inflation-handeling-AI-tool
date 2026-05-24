@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npm run build --workspace=apps/frontend",
+  "devCommand": "npm run dev --workspace=apps/frontend",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": "apps/frontend/.next"
+}

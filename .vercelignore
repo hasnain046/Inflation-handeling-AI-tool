@@ -1,0 +1,4 @@
+apps/backend
+apps/ml-service
+packages
+.git/modules
